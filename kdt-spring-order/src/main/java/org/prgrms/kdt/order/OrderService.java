@@ -1,8 +1,13 @@
-package org.prgrms.kdt;
+package org.prgrms.kdt.order;
+
+import org.prgrms.kdt.OrderRepository;
+import org.prgrms.kdt.voucher.VoucherService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Service
 public class OrderService {
     private final VoucherService voucherService;
     private final OrderRepository orderRepository;

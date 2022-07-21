@@ -1,5 +1,7 @@
 package org.prgrms.kdt;
 
+import org.prgrms.kdt.order.Order;
+
 public interface OrderRepository {
-    void insert(Order order);
+    Order insert(Order order);
 }
