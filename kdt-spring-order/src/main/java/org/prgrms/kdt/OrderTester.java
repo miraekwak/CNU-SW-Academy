@@ -4,6 +4,7 @@ import org.prgrms.kdt.order.OrderItem;
 import org.prgrms.kdt.order.OrderService;
 import org.prgrms.kdt.voucher.FixedAmountVoucher;
 import org.prgrms.kdt.voucher.VoucherRepository;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Assert;
 
@@ -17,7 +18,20 @@ public class OrderTester {
 
         var customerId = UUID.randomUUID();
 
-        var voucherRepository = applicationContext.getBean(VoucherRepository.class);
+        var voucherRepository =
+                BeanFactoryAnnotationUtils.qualifiedBeanOfType(
+                        applicationContext.getBeanFactory(),
+                        VoucherRepository.class,
+                        "memory");
+        var voucherRepository2 =
+                BeanFactoryAnnotationUtils.qualifiedBeanOfType(
+                        applicationContext.getBeanFactory(),
+                        VoucherRepository.class,
+                        "memory");
+        System.out.println(MessageFormat.format("voucherRepository{0}", voucherRepository));
+        System.out.println(MessageFormat.format("voucherRepository2{0}", voucherRepository2));
+        System.out.println(MessageFormat.format("voucherRepository == voucherRepository2 == {0}", voucherRepository == voucherRepository2));
+
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
 
         var orderService = applicationContext.getBean(OrderService.class);
@@ -26,5 +40,7 @@ public class OrderTester {
         }}, voucher.getVoucherId());
 
         Assert.isTrue(order.totalAmount() == 90L, MessageFormat.format("totalAmount{0} is not 90L", order.totalAmount()));
+
+        applicationContext.close();
     }
 }
