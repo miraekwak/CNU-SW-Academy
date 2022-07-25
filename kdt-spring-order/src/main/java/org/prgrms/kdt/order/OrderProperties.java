@@ -2,24 +2,25 @@ package org.prgrms.kdt.order;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.List;
 
-@Component
+@Configuration
+@ConfigurationProperties(prefix = "kdt")
 public class OrderProperties implements InitializingBean {
 
-    @Value("${kdt.version2:v0.0.0}")
     private String version;
 
-    @Value("${kdt.minimum-order-amount}")
     private String minimumOrderAmount;
 
-    @Value("${kdt.support-vendors}")
     private List<String> supportVendors;
 
-    @Value("${JAVA_HOME}")
+    private String description;
+
     private String javaHome;
 
     @Override
@@ -29,5 +30,21 @@ public class OrderProperties implements InitializingBean {
         System.out.println(MessageFormat.format("supportVendors -> {0}", supportVendors));
         System.out.println(MessageFormat.format("javaHome -> {0}", javaHome));
 
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public String getMinimumOrderAmount() {
+        return minimumOrderAmount;
+    }
+
+    public List<String> getSupportVendors() {
+        return supportVendors;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
