@@ -21,6 +21,7 @@ public class OrderProperties implements InitializingBean {
 
     private String description;
 
+    @Value("${JAVA_HOME}")
     private String javaHome;
 
     @Override
@@ -46,5 +47,21 @@ public class OrderProperties implements InitializingBean {
 
     public String getDescription() {
         return description;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setMinimumOrderAmount(String minimumOrderAmount) {
+        this.minimumOrderAmount = minimumOrderAmount;
+    }
+
+    public void setSupportVendors(List<String> supportVendors) {
+        this.supportVendors = supportVendors;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
