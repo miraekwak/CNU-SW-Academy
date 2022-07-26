@@ -1,6 +1,8 @@
 package org.prgrms.kdt;
 
 import org.prgrms.kdt.order.OrderProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -14,16 +16,20 @@ import java.text.MessageFormat;
 )
 public class KdtSpringOrderApplication {
 
+    private final static Logger logger = LoggerFactory.getLogger(KdtSpringOrderApplication.class);
+
     public static void main(String[] args) {
+//        SpringApplication.run(KdtSpringOrderApplication.class);
         var springApplication = new SpringApplication(KdtSpringOrderApplication.class);
-        springApplication.setAdditionalProfiles("dev");
+//        springApplication.setAdditionalProfiles("dev");
         var applicationContext = springApplication.run(args);
 
         var orderProperties = applicationContext.getBean(OrderProperties.class);
-        System.out.println(MessageFormat.format("version -> {0}", orderProperties.getVersion()));
-        System.out.println(MessageFormat.format("minimumOrderAmount -> {0}", orderProperties.getMinimumOrderAmount()));
-        System.out.println(MessageFormat.format("supportVendors -> {0}", orderProperties.getSupportVendors()));
-        System.out.println(MessageFormat.format("description -> {0}", orderProperties.getDescription()));
+        logger.info("logger name => {}", logger.getName());
+        logger.info("version -> {0}", orderProperties.getVersion());
+        logger.info("minimumOrderAmount -> {0}", orderProperties.getMinimumOrderAmount());
+        logger.info("supportVendors -> {0}", orderProperties.getSupportVendors());
+        logger.info("description -> {0}", orderProperties.getDescription());
 
     }
 
