@@ -6,6 +6,8 @@ import org.prgrms.kdt.order.OrderService;
 import org.prgrms.kdt.voucher.FixedAmountVoucher;
 import org.prgrms.kdt.voucher.JdbcVoucherRepository;
 import org.prgrms.kdt.voucher.VoucherRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -23,6 +25,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class OrderTester {
+
+    // 로거이름 : org.prgrms.kdt.OrderTestser
+    private static final Logger logger = LoggerFactory.getLogger(OrderTester.class);
+
     public static void main(String[] args) throws IOException {
         var applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.register(AppConfiguration.class);
@@ -40,10 +46,11 @@ public class OrderTester {
 //        System.out.println(MessageFormat.format("supportVendors -> {0}", supportVendors));
 //        System.out.println(MessageFormat.format("description -> {0}", description));
         var orderProperties = applicationContext.getBean(OrderProperties.class);
-//        System.out.println(MessageFormat.format("version -> {0}", orderProperties.getVersion()));
-//        System.out.println(MessageFormat.format("minimumOrderAmount -> {0}", orderProperties.getMinimumOrderAmount()));
-//        System.out.println(MessageFormat.format("supportVendors -> {0}", orderProperties.getSupportVendors()));
-//        System.out.println(MessageFormat.format("description -> {0}", orderProperties.getDescription()));
+        logger.info("logger name => {}", logger.getName());
+        logger.info("version -> {0}", orderProperties.getVersion());
+        logger.info("minimumOrderAmount -> {0}", orderProperties.getMinimumOrderAmount());
+        logger.info("supportVendors -> {0}", orderProperties.getSupportVendors());
+        logger.info("description -> {0}", orderProperties.getDescription());
 
         var resource = applicationContext.getResource("classpath:application.yaml");
         var resource2 = applicationContext.getResource("file:test/sample.txt"); // working directory 기준
