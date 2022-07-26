@@ -1,0 +1,5 @@
+[33m22:51:03.768[0;39m [main] INFO  org.prgrms.kdt.OrderTester - logger name => org.prgrms.kdt.OrderTester
+[33m22:51:03.774[0;39m [main] INFO  org.prgrms.kdt.OrderTester - version -> {0}
+[33m22:51:03.774[0;39m [main] INFO  org.prgrms.kdt.OrderTester - minimumOrderAmount -> {0}
+[33m22:51:03.774[0;39m [main] INFO  org.prgrms.kdt.OrderTester - supportVendors -> {0}
+[33m22:51:03.775[0;39m [main] INFO  org.prgrms.kdt.OrderTester - description -> {0}
