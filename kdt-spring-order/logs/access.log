@@ -1,13 +1,6 @@
-[33m22:51:03.768[0;39m [main] INFO  org.prgrms.kdt.OrderTester - logger name => org.prgrms.kdt.OrderTester
-[33m22:51:03.774[0;39m [main] INFO  org.prgrms.kdt.OrderTester - version -> {0}
-[33m22:51:03.774[0;39m [main] INFO  org.prgrms.kdt.OrderTester - minimumOrderAmount -> {0}
-[33m22:51:03.774[0;39m [main] INFO  org.prgrms.kdt.OrderTester - supportVendors -> {0}
-[33m22:51:03.775[0;39m [main] INFO  org.prgrms.kdt.OrderTester - description -> {0}
-23:44:25.542 [main] INFO  o.p.kdt.KdtSpringOrderApplication - Starting KdtSpringOrderApplication using Java 17.0.4 on DESKTOP-6NH93BC with PID 24208 (C:\Users\MIRAE\CNU_LectureMaterial\2022\2022_CNU SW 아카데미\project\CNU-SW-Academy\kdt-spring-order\target\classes started by MIRAE in C:\Users\MIRAE\CNU_LectureMaterial\2022\2022_CNU SW 아카데미\project\CNU-SW-Academy\kdt-spring-order)
-23:44:25.547 [main] INFO  o.p.kdt.KdtSpringOrderApplication - No active profile set, falling back to 1 default profile: "default"
-23:44:26.603 [main] INFO  o.p.kdt.KdtSpringOrderApplication - Started KdtSpringOrderApplication in 2.138 seconds (JVM running for 5.497)
-23:44:26.609 [main] INFO  o.p.kdt.KdtSpringOrderApplication - logger name => org.prgrms.kdt.KdtSpringOrderApplication
-23:44:26.610 [main] INFO  o.p.kdt.KdtSpringOrderApplication - version -> {0}
-23:44:26.610 [main] INFO  o.p.kdt.KdtSpringOrderApplication - minimumOrderAmount -> {0}
-23:44:26.610 [main] INFO  o.p.kdt.KdtSpringOrderApplication - supportVendors -> {0}
-23:44:26.610 [main] INFO  o.p.kdt.KdtSpringOrderApplication - description -> {0}
+21:53:35.650 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeAll - 단 한번 실행
+21:53:35.674 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeEach - 매 테스트마다 실행
+22:03:17.800 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeAll - 단 한번 실행
+22:03:17.825 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeEach - 매 테스트마다 실행
+22:04:51.136 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeAll - 단 한번 실행
+22:04:51.166 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeEach - 매 테스트마다 실행
