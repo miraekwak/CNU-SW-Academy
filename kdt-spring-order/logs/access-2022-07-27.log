@@ -1,0 +1,6 @@
+21:53:35.650 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeAll - 단 한번 실행
+21:53:35.674 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeEach - 매 테스트마다 실행
+22:03:17.800 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeAll - 단 한번 실행
+22:03:17.825 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeEach - 매 테스트마다 실행
+22:04:51.136 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeAll - 단 한번 실행
+22:04:51.166 [main] INFO  o.p.k.voucher.FixedAmountVoucherTest - @BeforeEach - 매 테스트마다 실행
