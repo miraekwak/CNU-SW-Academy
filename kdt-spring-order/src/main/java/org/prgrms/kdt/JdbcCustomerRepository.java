@@ -139,7 +139,7 @@ public class JdbcCustomerRepository {
 
     static UUID toUUID(byte[] bytes){
         var byteBuffer = ByteBuffer.wrap(bytes);
-        return new UUID(byteBuffer.getLong(), byteBuffer.get());
+        return new UUID(byteBuffer.getLong(), byteBuffer.getLong());
     }
 
     public static void main(String[] args) {

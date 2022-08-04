@@ -1,10 +1,9 @@
-16:36:21.728 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> a254863e-bb93-3d11-afcf-95ca3866c9eb, customer name -> tester00, create_at -> 2022-07-29T19:44:51
-16:36:21.744 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> 2d0f84e4-a8fb-30ee-b123-9274107a05b4, customer name -> tester01, create_at -> 2022-07-29T19:44:52
-16:36:21.744 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> cee766cf-b63b-37b3-bd0a-493732700885, customer name -> tester02, create_at -> 2022-07-29T19:44:52
-16:45:47.831 [main] ERROR o.prgrms.kdt.JdbcCustomerRepository - got error while closing connection
-java.sql.SQLSyntaxErrorException: Unknown column 'tester01' in 'where clause'
-	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
-	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
-	at com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1201)
-	at org.prgrms.kdt.JdbcCustomerRepository.findNames(JdbcCustomerRepository.java:23)
-	at org.prgrms.kdt.JdbcCustomerRepository.main(JdbcCustomerRepository.java:42)
+16:57:54.747 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - deleted count -> 0
+16:57:54.761 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - created customerId -> 060da31c-6d5e-4144-a743-f99ecfef36c8
+16:57:55.041 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> ad341cc7-3483-38d8-9d7e-4d619da90e7a, customer name -> new-user, create_at -> 2022-08-02T16:57:54.891960
+16:57:55.054 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - Found customerId -> ad341cc7-3483-38d8-9d7e-4d619da90e7a
+17:01:53.800 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - deleted count -> 1
+17:01:53.809 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - created customerId -> 55ac1241-cb0e-40c6-a94c-2560c66fd4d9
+17:01:53.809 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - created customerId Version -> 4
+17:01:53.996 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> 0fee687b-52d9-32b2-99f4-d0137d50a183, customer name -> new-user, create_at -> 2022-08-02T17:01:53.889429
+17:01:53.999 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - Found customerId -> 0fee687b-52d9-32b2-99f4-d0137d50a183 version

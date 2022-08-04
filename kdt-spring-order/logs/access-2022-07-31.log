@@ -1,0 +1,10 @@
+16:36:21.728 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> a254863e-bb93-3d11-afcf-95ca3866c9eb, customer name -> tester00, create_at -> 2022-07-29T19:44:51
+16:36:21.744 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> 2d0f84e4-a8fb-30ee-b123-9274107a05b4, customer name -> tester01, create_at -> 2022-07-29T19:44:52
+16:36:21.744 [main] INFO  o.prgrms.kdt.JdbcCustomerRepository - customer id -> cee766cf-b63b-37b3-bd0a-493732700885, customer name -> tester02, create_at -> 2022-07-29T19:44:52
+16:45:47.831 [main] ERROR o.prgrms.kdt.JdbcCustomerRepository - got error while closing connection
+java.sql.SQLSyntaxErrorException: Unknown column 'tester01' in 'where clause'
+	at com.mysql.cj.jdbc.exceptions.SQLError.createSQLException(SQLError.java:120)
+	at com.mysql.cj.jdbc.exceptions.SQLExceptionsMapping.translateException(SQLExceptionsMapping.java:122)
+	at com.mysql.cj.jdbc.StatementImpl.executeQuery(StatementImpl.java:1201)
+	at org.prgrms.kdt.JdbcCustomerRepository.findNames(JdbcCustomerRepository.java:23)
+	at org.prgrms.kdt.JdbcCustomerRepository.main(JdbcCustomerRepository.java:42)
