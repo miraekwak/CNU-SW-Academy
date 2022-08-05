@@ -1,5 +1,8 @@
 package org.prgrms.kdt.customer;
 
+import com.wix.mysql.EmbeddedMysql;
+import com.wix.mysql.config.Charset;
+import com.wix.mysql.distribution.Version;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +11,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import javax.sql.DataSource;
@@ -16,9 +21,15 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
+import static com.wix.mysql.ScriptResolver.classPathScript;
+import static com.wix.mysql.config.Charset.UTF8;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
+import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
+
 
 @SpringJUnitConfig
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -32,9 +43,17 @@ class CustomerJdbcRepositoryTest {
     static class Config{
         @Bean
         public DataSource dataSource() {
+//            return new EmbeddedDatabaseBuilder()
+//                    .generateUniqueName(true)
+//                    .setType(H2)
+//                    .setScriptEncoding("UTF-8")
+//                    .ignoreFailedDrops(true)
+//                    .addScript("schema.sql")
+//                    .build();
+
             var dataSource = DataSourceBuilder.create()
-                    .url("jdbc:mysql://localhost/order_mgmt")
-                    .username("root")
+                    .url("jdbc:mysql://localhost:2215/test-order_mgmt")
+                    .username("test")
                     .password("0000")
                     .type(HikariDataSource.class)
                     .build();
@@ -57,13 +76,28 @@ class CustomerJdbcRepositoryTest {
 
     Customer newCustomer;
 
+    EmbeddedMysql embeddedMysql;
+
     @BeforeAll
     void setup() {
         newCustomer = new Customer(UUID.randomUUID(), "test-user", "test-user@gmail.com",
                 LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
-        customerRepository.deleteAll();
+        var mysqlConfig = aMysqldConfig(Version.v5_7_10)
+                .withCharset(UTF8)
+                .withPort(2215)
+                .withUser("test", "0000")
+                .withTimeZone("Asia/Seoul")
+                .build();
+        embeddedMysql = anEmbeddedMysql(mysqlConfig)
+                .addSchema("test-order_mgmt", classPathScript("schema.sql"))
+                .start();
+//        customerRepository.deleteAll();
     }
 
+    @AfterAll
+    void cleanup() {
+        embeddedMysql.stop();
+    }
 
     @Test
     @Order(1)
