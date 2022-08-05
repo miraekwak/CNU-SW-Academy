@@ -5,27 +5,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Repository
-public class CustomerJdbcRepository implements CustomerRepository{
+public class CustomerNamedJdbcRepository implements CustomerRepository{
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomerJdbcRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomerNamedJdbcRepository.class);
 
-    private DataSource dataSource;
+    private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    private final JdbcTemplate jdbcTemplate;
     private static RowMapper<Customer> customerRowMapper = (resultSet, i) -> {
         var customerName = resultSet.getString("name");
         var customerEmail = resultSet.getString("email");
@@ -37,106 +33,53 @@ public class CustomerJdbcRepository implements CustomerRepository{
     };
 
 
-    public CustomerJdbcRepository(DataSource dataSource, JdbcTemplate jdbcTemplate) {
-        this.dataSource = dataSource;
+    public CustomerNamedJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+
+    private Map<String, Object> toParamMap(Customer customer){
+      return new HashMap<String, Object>(){{
+            put("customerId", customer.getCustomerId().toString());
+            put("name", customer.getName());
+            put("email", customer.getEmail());
+            put("createdAt",Timestamp.valueOf(customer.getCreatedAt()));
+
+        }};
     }
 
     @Override
     public Customer insert(Customer customer) {
-        var update = jdbcTemplate.update("INSERT INTO customers(customer_id, name, email, created_at) VALUES (UNHEX(REPLACE(?, '-','')), ?, ?, ?)",
-                customer.getCustomerId().toString(),
-                customer.getName(),
-                customer.getEmail(),
-                Timestamp.valueOf(customer.getCreatedAt()));
+
+        var update = jdbcTemplate.update("INSERT INTO customers(customer_id, name, email, created_at) " +
+                        "VALUES (UNHEX(REPLACE(:customerId, '-','')), :name, :email, :createdAt)",
+                toParamMap(customer));
         if(update != 1) {
             throw new RuntimeException("Nothing was inserted");
         }
         return customer;
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement(
-//                        "INSERT INTO customers(customer_id, name, email, created_at) VALUES (UUID_TO_BIN(?), ?, ?, ?)");
-//
-//        )
-//        {
-//            statement.setBytes(1, customer.getCustomerId().toString().getBytes());
-//            statement.setString(2, customer.getName());
-//            statement.setString(3, customer.getEmail());
-//            statement.setTimestamp(4, Timestamp.valueOf(customer.getCreatedAt()));
-//            var executeUpdate = statement.executeUpdate();
-//            if (executeUpdate != 1) {
-//                throw new RuntimeException("Nothing was inserted");
-//            }
-//            return customer;
-//        } catch (SQLException throwable) {
-//            logger.error("got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
     }
 
     @Override
     public Customer update(Customer customer) {
-        var update = jdbcTemplate.update("UPDATE customers SET name = ?, email = ?, last_login_at = ? WHERE customer_id = UNHEX(REPLACE(?, '-',''))",
-                customer.getName(),
-                customer.getEmail(),
-                customer.getLastLoginAt() != null ?
-                        Timestamp.valueOf(customer.getLastLoginAt()) : null,
-                customer.getCustomerId().toString()
-                );
+        var update = jdbcTemplate.update("UPDATE customers SET name = :name, email = :email, last_login_at = :lastLoginAt WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))",
+                toParamMap(customer));
         if(update != 1) {
             throw new RuntimeException("Nothing was updated");
         }
         return customer;
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement(
-//                        "UPDATE customers SET name = ?, email = ?, last_login_at = ? WHERE customer_id = UUID_TO_BIN(?)");
-//        )
-//        {
-//            statement.setString(1, customer.getName());
-//            statement.setString(2, customer.getEmail());
-//            statement.setTimestamp(3, customer.getLastLoginAt() != null ?
-//                    Timestamp.valueOf(customer.getLastLoginAt()) : null);
-//            statement.setBytes(4, customer.getCustomerId().toString().getBytes());
-//            var executeUpdate = statement.executeUpdate();
-//            if (executeUpdate != 1) {
-//                throw new RuntimeException("Nothing was updated");
-//            }
-//            return customer;
-//        } catch (SQLException throwable) {
-//            logger.error("got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
     }
 
     @Override
     public int count() {
-        return jdbcTemplate.queryForObject("select count(*) from customers", Integer.class);
+        return jdbcTemplate.queryForObject("select count(*) from customers", Collections.emptyMap(), Integer.class);
     }
 
     @Override
     public List<Customer> findAll() {
         return jdbcTemplate.query("select * from customers", customerRowMapper);
-//        List<Customer> allCustomers = new ArrayList<>();
-//
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement("select * from customers");
-//                var resultSet = statement.executeQuery();
-//        )
-//        {
-//            while (resultSet.next()) {
-//                mapToCustomer(allCustomers, resultSet);
-//            }
-//        } catch (SQLException throwable) {
-//            logger.error("Got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
-//        return allCustomers;
     }
 
-    private void mapToCustomer(List<Customer> allCustomers, java.sql.ResultSet resultSet) throws SQLException {
+    private void mapToCustomer(List<Customer> allCustomers, ResultSet resultSet) throws SQLException {
         var customerName = resultSet.getString("name");
         var customerEmail = resultSet.getString("email");
         var customerId = toUUID(resultSet.getBytes("customer_id"));
@@ -151,37 +94,15 @@ public class CustomerJdbcRepository implements CustomerRepository{
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "select * from customers where customer_id = UNHEX(REPLACE(?, '-',''))",
-                            customerRowMapper,
-                            customerId.toString())
+                            "select * from customers where customer_id = UNHEX(REPLACE(:customerId, '-',''))",
+                            Collections.singletonMap("customerId", customerId.toString()),
+                            customerRowMapper
+                    )
             );
         } catch (EmptyResultDataAccessException e){
             logger.error("Got empty result ", e);
             return Optional.empty();
         }
-
-//        List<Customer> allCustomers = new ArrayList<>();
-//
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement("select * from customers where customer_id = UUID_TO_BIN(?)");
-//
-//        )
-//        {
-//            statement.setBytes(1, customerId.toString().getBytes());
-//            logger.info("statement -> {}", statement);
-//            try(
-//                    var resultSet = statement.executeQuery();
-//            ){
-//                while (resultSet.next()) {
-//                    mapToCustomer(allCustomers, resultSet);
-//                }
-//            }
-//        } catch (SQLException throwable) {
-//            logger.error("got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
-//        return allCustomers.stream().findFirst();
     }
 
     @Override
@@ -189,36 +110,15 @@ public class CustomerJdbcRepository implements CustomerRepository{
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "select * from customers where name = ?",
-                            customerRowMapper,
-                            name)
+                            "select * from customers where name = :name",
+                            Collections.singletonMap("name", name),
+                            customerRowMapper
+                            )
             );
         } catch (EmptyResultDataAccessException e){
             logger.error("Got empty result ", e);
             return Optional.empty();
         }
-//        List<Customer> allCustomers = new ArrayList<>();
-//
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement("select * from customers where name = ?");
-//
-//        )
-//        {
-//            statement.setString(1, name);
-//            logger.info("statement -> {}", statement);
-//            try(
-//                    var resultSet = statement.executeQuery();
-//            ){
-//                while (resultSet.next()) {
-//                    mapToCustomer(allCustomers, resultSet);
-//                }
-//            }
-//        } catch (SQLException throwable) {
-//            logger.error("got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
-//        return allCustomers.stream().findFirst();
     }
 
     @Override
@@ -226,51 +126,22 @@ public class CustomerJdbcRepository implements CustomerRepository{
         try {
             return Optional.ofNullable(
                     jdbcTemplate.queryForObject(
-                            "select * from customers where email = ?",
-                            customerRowMapper,
-                            email)
+                            "select * from customers where email = :email",
+                            Collections.singletonMap("email", email),
+                            customerRowMapper
+                            )
             );
         } catch (EmptyResultDataAccessException e){
             logger.error("Got empty result ", e);
             return Optional.empty();
         }
-//        List<Customer> allCustomers = new ArrayList<>();
-//
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement("select * from customers where email = ?");
-//
-//        )
-//        {
-//            statement.setString(1, email);
-//            logger.info("statement -> {}", statement);
-//            try(
-//                    var resultSet = statement.executeQuery();
-//            ){
-//                while (resultSet.next()) {
-//                    mapToCustomer(allCustomers, resultSet);
-//                }
-//            }
-//        } catch (SQLException throwable) {
-//            logger.error("got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
-//        return allCustomers.stream().findFirst();
     }
 
     @Override
     public void deleteAll() {
-        var update = jdbcTemplate.update("DELETE FROM customers");
-//        try (
-//                var connection = dataSource.getConnection();
-//                var statement = connection.prepareStatement("DELETE FROM customers");
-//       )
-//        {
-//            statement.executeUpdate();
-//        } catch (SQLException throwable) {
-//            logger.error("got error while closing connection", throwable);
-//            throw new RuntimeException(throwable);
-//        }
+        var update = jdbcTemplate.update("DELETE FROM customers", Collections.emptyMap());
+//        var update = jdbcTemplate.getJdbcTemplate().update("DELETE FROM customers");
+
     }
 
     static UUID toUUID(byte[] bytes){

@@ -1,7 +1,6 @@
 package org.prgrms.kdt.customer;
 
 import com.wix.mysql.EmbeddedMysql;
-import com.wix.mysql.config.Charset;
 import com.wix.mysql.distribution.Version;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
@@ -11,12 +10,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import javax.sql.DataSource;
-
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
@@ -24,17 +21,15 @@ import java.util.UUID;
 import static com.wix.mysql.EmbeddedMysql.anEmbeddedMysql;
 import static com.wix.mysql.ScriptResolver.classPathScript;
 import static com.wix.mysql.config.Charset.UTF8;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.Matchers.*;
-import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 import static com.wix.mysql.config.MysqldConfig.aMysqldConfig;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 
 @SpringJUnitConfig
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class CustomerJdbcRepositoryTest {
+class CustomerNamedJdbcRepositoryTest {
 
     @Configuration
     @ComponentScan(
@@ -43,14 +38,6 @@ class CustomerJdbcRepositoryTest {
     static class Config{
         @Bean
         public DataSource dataSource() {
-//            return new EmbeddedDatabaseBuilder()
-//                    .generateUniqueName(true)
-//                    .setType(H2)
-//                    .setScriptEncoding("UTF-8")
-//                    .ignoreFailedDrops(true)
-//                    .addScript("schema.sql")
-//                    .build();
-
             var dataSource = DataSourceBuilder.create()
                     .url("jdbc:mysql://localhost:2215/test-order_mgmt")
                     .username("test")
@@ -65,6 +52,11 @@ class CustomerJdbcRepositoryTest {
         @Bean
         public JdbcTemplate jdbcTemplate(DataSource dataSource) {
             return new JdbcTemplate(dataSource);
+        }
+
+        @Bean
+        public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate) {
+            return new NamedParameterJdbcTemplate(jdbcTemplate);
         }
     }
 
@@ -91,7 +83,6 @@ class CustomerJdbcRepositoryTest {
         embeddedMysql = anEmbeddedMysql(mysqlConfig)
                 .addSchema("test-order_mgmt", classPathScript("schema.sql"))
                 .start();
-//        customerRepository.deleteAll();
     }
 
     @AfterAll
