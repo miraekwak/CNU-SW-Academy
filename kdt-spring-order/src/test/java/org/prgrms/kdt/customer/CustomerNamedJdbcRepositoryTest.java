@@ -4,11 +4,14 @@ import com.wix.mysql.EmbeddedMysql;
 import com.wix.mysql.distribution.Version;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -30,6 +33,8 @@ import static org.hamcrest.Matchers.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomerNamedJdbcRepositoryTest {
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerNamedJdbcRepositoryTest.class);
 
     @Configuration
     @ComponentScan(
@@ -100,7 +105,12 @@ class CustomerNamedJdbcRepositoryTest {
     @Order(2)
     @DisplayName("고객을 추가할 수 있다.")
     public void testInsert() throws InterruptedException {
-        customerRepository.insert(newCustomer);
+
+        try{
+            customerRepository.insert(newCustomer);
+        } catch (BadSqlGrammarException e) {
+            logger.error("Got error code - ", e.getSQLException().getErrorCode());
+        }
 
         var retrievedCustomer = customerRepository.findById(newCustomer.getCustomerId());
         assertThat(retrievedCustomer.isEmpty(), is(false));

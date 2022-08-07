@@ -1,5 +1,6 @@
 package org.prgrms.kdt;
 
+import org.prgrms.kdt.customer.Customer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -7,6 +8,7 @@ import javax.xml.transform.Result;
 import java.nio.ByteBuffer;
 import java.sql.*;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -137,6 +139,43 @@ public class JdbcCustomerRepository {
         return 0;
     }
 
+    public void transactionTest(Customer customer) {
+        String updateNameSql = "UPDATE customers SET name = ? WHERE customer_id = UUID_TO_BIN(?)";
+        String updateEmailSql = "UPDATE customers SET email = ? WHERE customer_id = UUID_TO_BIN(?)";
+        Connection connection = null;
+        try{
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/order_mgmt", "root", "0000");
+            connection.setAutoCommit(false);
+            try (
+                    var updateNameStatement = connection.prepareStatement(updateNameSql);
+                    var updateEmailStatement = connection.prepareStatement(updateEmailSql);
+            )
+            {
+                updateNameStatement.setString(1, customer.getName());
+                updateNameStatement.setBytes(2, customer.getCustomerId().toString().getBytes());
+                updateNameStatement.executeUpdate();
+
+                updateEmailStatement.setString(1, customer.getEmail());
+                updateEmailStatement.setBytes(2, customer.getCustomerId().toString().getBytes());
+                updateEmailStatement.executeUpdate();
+
+                connection.setAutoCommit(true);
+            }
+        } catch (SQLException exception) {
+            if(connection != null) {
+                try {
+                    connection.rollback();
+                    connection.close();
+                } catch (SQLException throwable) {
+                    logger.error("got error while closing connection", throwable);
+                }
+            }
+            logger.error("got error while closing connection", exception);
+            throw new RuntimeException(exception);
+        }
+
+    }
+
     static UUID toUUID(byte[] bytes){
         var byteBuffer = ByteBuffer.wrap(bytes);
         return new UUID(byteBuffer.getLong(), byteBuffer.getLong());
@@ -149,8 +188,8 @@ public class JdbcCustomerRepository {
         logger.info("deleted count -> {}", count);
 
 //        customerRepository.insertCustomer(UUID.randomUUID(), "new-user", "new-user@gmail.com");
-//        var customer2 = UUID.randomUUID();
-//        customerRepository.insertCustomer(customer2, "new-user2", "new-user2@gmail.com");
+        var customer2 = UUID.randomUUID();
+        customerRepository.insertCustomer(customer2, "new-user2", "new-user2@gmail.com");
 //        customerRepository.findAllName().forEach(v -> logger.info("Found name -> {}", v));
 //
 //        customerRepository.updateCustomerName(customer2, "updated-user2");
@@ -163,6 +202,6 @@ public class JdbcCustomerRepository {
         customerRepository.insertCustomer(customerId, "new-user", "new-user@gmail.com");
         customerRepository.findAllIds().forEach(v -> logger.info("Found customerId -> {} version", v, v.version()));
 
-
+        customerRepository.transactionTest(new Customer(customer2, "updated-user", "new-user@gmail.com", LocalDateTime.now()));
     }
 }
