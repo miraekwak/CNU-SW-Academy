@@ -2,25 +2,32 @@ package org.prgrms.kdt.customer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.sql.DataSource;
 import java.nio.ByteBuffer;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.*;
 
 @Repository
+@Primary
 public class CustomerNamedJdbcRepository implements CustomerRepository{
 
     private static final Logger logger = LoggerFactory.getLogger(CustomerNamedJdbcRepository.class);
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
+
+//    private final PlatformTransactionManager transactionManager;
+
+//    private final TransactionTemplate transactionTemplate;
 
     private static RowMapper<Customer> customerRowMapper = (resultSet, i) -> {
         var customerName = resultSet.getString("name");
@@ -61,7 +68,7 @@ public class CustomerNamedJdbcRepository implements CustomerRepository{
 
     @Override
     public Customer update(Customer customer) {
-        var update = jdbcTemplate.update("UPDATE customers SET name = :name, email = :email, last_login_at = :lastLoginAt WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))",
+        var update = jdbcTemplate.update("UPDATE customers SET name = :name, email = :email, created_at = :createdAt WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))",
                 toParamMap(customer));
         if(update != 1) {
             throw new RuntimeException("Nothing was updated");
@@ -136,6 +143,26 @@ public class CustomerNamedJdbcRepository implements CustomerRepository{
             return Optional.empty();
         }
     }
+
+//    public void testTransaction(Customer customer) {
+//        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+//            @Override
+//            protected void doInTransactionWithoutResult(TransactionStatus status) {
+//                jdbcTemplate.update("UPDATE customers SET name = :name WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))", toParamMap(customer));
+//                jdbcTemplate.update("UPDATE customers SET email = :email WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))", toParamMap(customer));
+//            }
+//        });
+////        var transaction = transactionManager.getTransaction(new DefaultTransactionDefinition());
+//
+////        try{
+////            jdbcTemplate.update("UPDATE customers SET name = :name WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))", toParamMap(customer));
+////            jdbcTemplate.update("UPDATE customers SET email = :email WHERE customer_id = UNHEX(REPLACE(:customerId, '-',''))", toParamMap(customer));
+////            transactionManager.commit(transaction);
+////       } catch (DataAccessException e) {
+////            logger.info("Got error", e);
+////            transactionManager.rollback(transaction);
+////        }
+//    }
 
     @Override
     public void deleteAll() {
