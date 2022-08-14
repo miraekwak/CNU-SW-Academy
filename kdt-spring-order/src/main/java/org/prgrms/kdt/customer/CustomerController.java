@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class CustomerController {
 
 
     @RequestMapping(value = "/customers", method = RequestMethod.GET)
-    public String findCustomers(Model model) {
+    public String viewCustomersPage(Model model) {
         var allCustomers = customerService.getAllCustomers();
         model.addAttribute("serverTime", LocalDateTime.now());
         model.addAttribute("customers", allCustomers);
@@ -29,6 +30,12 @@ public class CustomerController {
 //        return new ModelAndView("views/customers",
 //                Map.of("serverTime", LocalDateTime.now(),
 //                        "customers", allCustomers));
+    }
+
+    @RequestMapping(value = "/api/v1/customers", method = RequestMethod.GET)
+    @ResponseBody
+    public List<Customer> findCustomers() {
+        return customerService.getAllCustomers();
     }
 
     @GetMapping("/customers/{customerId}")
