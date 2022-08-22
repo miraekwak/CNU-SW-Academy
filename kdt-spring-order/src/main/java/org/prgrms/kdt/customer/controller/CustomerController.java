@@ -1,5 +1,8 @@
 package org.prgrms.kdt.customer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +18,8 @@ import java.util.UUID;
 public class CustomerController {
 
     private final CustomerService customerService;
+
+    private static final Logger logger = LoggerFactory.getLogger(CustomerController.class);
 
     public CustomerController(CustomerService customerService) {
         this.customerService = customerService;
@@ -36,6 +41,19 @@ public class CustomerController {
     @ResponseBody
     public List<Customer> findCustomers() {
         return customerService.getAllCustomers();
+    }
+
+//    @GetMapping("/customers/{customerId}")
+//    public ResponseEntity<Customer> findCustomer(@PathVariable("customerId") UUID customerId) {
+//        var maybeCustomer = customerService.getCustomer(customerId);
+//        return maybeCustomer.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+//    }
+
+    @PostMapping("/customers/{customerId}")
+    public CustomerDto findCustomer(@PathVariable("customerId") UUID customerId, @RequestBody CustomerDto customer) {
+        logger.info("Got customer save request {}", customer);
+        var maybeCustomer = customerService.getCustomer(customerId);
+        return customer;
     }
 
     @GetMapping("/customers/{customerId}")
@@ -60,4 +78,5 @@ public class CustomerController {
         customerService.createCustomer(createCustomerRequest.email(), createCustomerRequest.name());
         return "redirect:/customers";
     }
+
 }
