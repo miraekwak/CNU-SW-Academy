@@ -12,4 +12,5 @@ import javax.persistence.Entity;
 @DiscriminatorValue("FURNITURE")
 public class Furniture extends Item{
     private int width;
+    private int height;
 }

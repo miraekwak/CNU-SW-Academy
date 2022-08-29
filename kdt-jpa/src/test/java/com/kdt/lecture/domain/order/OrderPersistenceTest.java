@@ -28,7 +28,7 @@ public class OrderPersistenceTest {
         member.setName("kwakmirae");
         member.setAddress("대전 광역시");
         member.setAge(23);
-        member.setNickname("mara");
+        member.setNickName("mara");
         member.setDescription("백엔드 개발자");
 
         EntityManager entityManager = emf.createEntityManager();
@@ -52,7 +52,7 @@ public class OrderPersistenceTest {
         member.setName("kwakmirae");
         member.setAddress("대전 광역시");
         member.setAge(23);
-        member.setNickname("mara");
+        member.setNickName("mara");
         member.setDescription("백엔드 개발자");
 
         entityManager.persist(member);
@@ -61,7 +61,7 @@ public class OrderPersistenceTest {
         Order order = new Order();
         order.setUuid(UUID.randomUUID().toString());
         order.setOrderStatus(OrderStatus.OPENED);
-        order.setOrderDateTime(LocalDateTime.now());
+        order.setOrderDatetime(LocalDateTime.now());
         order.setMemo("부재시 연락주세요.");
         order.setMember(member);
 //        member.setOrders(Lists.newArrayList(order));

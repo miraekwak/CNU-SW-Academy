@@ -23,7 +23,7 @@ class OrderRepositoryTest {
         Order order = new Order();
         String uuid = UUID.randomUUID().toString();
         order.setUuid(uuid);
-        order.setOrderDateTime(LocalDateTime.now());
+        order.setOrderDatetime(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.OPENED);
         order.setMemo("-----");
         order.setCreatedBy("mirae.kwak");
@@ -37,7 +37,7 @@ class OrderRepositoryTest {
         List<Order> all = orderRepository.findAll();
 
         orderRepository.findAllByOrderStatus(OrderStatus.OPENED);
-        orderRepository.findAllByOrderStatusOrderByOrderDateTime(OrderStatus.OPENED);
+        orderRepository.findAllByOrderStatusOrderByOrderDatetime(OrderStatus.OPENED);
 
         orderRepository.findByMemo("-----");
     }

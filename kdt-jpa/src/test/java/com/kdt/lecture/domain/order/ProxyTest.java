@@ -33,7 +33,7 @@ public class ProxyTest {
         Order order = new Order();
         order.setUuid(uuid);
         order.setOrderStatus(OrderStatus.OPENED);
-        order.setOrderDateTime(LocalDateTime.now());
+        order.setOrderDatetime(LocalDateTime.now());
         order.setMemo("부재시 연락주세요.");
 
         entityManager.persist(order);
@@ -41,7 +41,7 @@ public class ProxyTest {
         // 회원 엔티티
         Member member = new Member();
         member.setName("mirae.kwak");
-        member.setNickname("mara");
+        member.setNickName("mara");
         member.setAge(23);
         member.setAddress("대전광역시");
         member.setDescription("백엔드 개발");
@@ -59,7 +59,7 @@ public class ProxyTest {
 
         Member member = order.getMember(); // 프록시 객체
         log.info("USE BEFORE isLoaded : {}", emf.getPersistenceUnitUtil().isLoaded(member));
-        log.info("USE MEMBER : nick-name : {}", member.getNickname()); // member.getNickName : 사용
+        log.info("USE MEMBER : nick-name : {}", member.getNickName()); // member.getNickName : 사용
         log.info("USE AFTER isLoaded : {}", emf.getPersistenceUnitUtil().isLoaded(member));
     }
 

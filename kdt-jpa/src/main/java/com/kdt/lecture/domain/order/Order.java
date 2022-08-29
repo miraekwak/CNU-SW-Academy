@@ -26,9 +26,9 @@ public class Order extends BaseEntity{
     private OrderStatus orderStatus;
 
     @Column(name = "order_datetime", columnDefinition = "TIMESTAMP")
-    private LocalDateTime orderDateTime;
+    private LocalDateTime orderDatetime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "member_id", referencedColumnName = "id")
     private Member member;
 

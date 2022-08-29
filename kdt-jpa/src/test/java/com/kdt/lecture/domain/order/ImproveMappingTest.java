@@ -47,7 +47,7 @@ public class ImproveMappingTest {
         Order order = new Order();
         order.setUuid(UUID.randomUUID().toString());
         order.setOrderStatus(OrderStatus.OPENED);
-        order.setOrderDateTime(LocalDateTime.now());
+        order.setOrderDatetime(LocalDateTime.now());
         order.setMemo("부재시 연락주세요.");
 
         //
