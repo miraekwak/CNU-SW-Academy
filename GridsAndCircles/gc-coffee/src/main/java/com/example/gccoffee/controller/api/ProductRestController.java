@@ -26,5 +26,4 @@ public class ProductRestController {
                 .orElse(productService.getAllProducts());
     }
 
-
 }
